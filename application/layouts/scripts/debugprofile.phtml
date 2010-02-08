@@ -1,0 +1,53 @@
+<!-- Debugging Part -->
+<div style="margin:0 auto;">
+<div style="border: solid 1px #FFDDEE; padding: 10px; margin: 10px;">
+	<div style="width: 850px; height: 300px; overflow: auto">
+	<?php
+		echo '<h2>SESSION and COOKIE</h2>';
+		echo '<pre>';
+		print_r($_COOKIE);
+		echo '<br /><br />';
+		print_r($_SESSION);
+		echo '</pre>';
+	?>
+	</div>
+</div>
+<div style="border: solid 1px #FFDDEE; padding: 10px; margin: 10px;">
+<?php
+	$db = Zend_Db_Table::getDefaultAdapter();
+	$profiler = $db->getProfiler();
+	$totalTime = $profiler->getTotalElapsedSecs();
+	$queryCount = $profiler->getTotalNumQueries();
+	$longestTime = 0;
+	$longestQuery = null;
+	$count = 0;
+	
+	$queries = $profiler->getQueryProfiles();
+	
+	if (!empty($queries))
+	{
+		echo '<hr /><table border="1" style="border-collapse: collapse;"><tr><th>Query #</th><th>Time</th><th>Query</th></tr>';
+		foreach ($queries as $query) {
+		echo "<tr>";
+		echo "<td>".$count++."</td>";
+		echo "<td>".$query->getElapsedSecs()."</td>";
+		echo "<td>".$query->getQuery()."</td>";
+		if ($query->getElapsedSecs() > $longestTime) {
+		$longestTime = $query->getElapsedSecs();
+		$longestQuery = $query->getQuery();
+		} // if ($query->getElapsedSecs() > $longestTime)
+		echo "</tr>";
+		} // foreach ($profiler->getQueryProfiles() as $query)
+		echo "</table>";
+		echo '<pre>Total Queries Executed : ' . $queryCount . "\n";
+		echo 'Total Time : ' . $totalTime . ' seconds' . "\n";
+		echo 'Average query length : ' . $totalTime / $queryCount . ' seconds' . "\n";
+		echo 'Queries per second : ' . $queryCount / $totalTime . "\n";
+		echo 'Longest query length : ' . $longestTime . "\n";
+		echo "Longest query : " . $longestQuery . "\n";
+		echo '</pre>';
+	}
+?>
+</div>
+</div>
+<!-- End of Debugging Part -->
